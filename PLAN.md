@@ -2,11 +2,11 @@
 
 ## Milestones
 - [x] 0. Read files, backup (../nuclear-sim-backup-original)
-- [ ] 1. Vite + GitHub Pages deploy of current app (live early)
-- [ ] 2. 3D scene (Three.js) with automatic 2D fallback (scene2d.js)
-- [ ] 3. UI redesign (side panel / bottom sheet, energy chain, gauge, tour, quality)
-- [ ] 4. Procedural Web Audio sound
-- [ ] 5. README, OG image, icons, screenshots (Playwright → docs/)
+- [x] 1. Vite + GitHub Pages deploy of current app (live early)
+- [x] 2. 3D scene (Three.js) with automatic 2D fallback (scene2d.js)
+- [x] 3. UI redesign (side panel / bottom sheet, energy chain, gauge, tour, quality)
+- [x] 4. Procedural Web Audio sound
+- [x] 5. README, OG image, icons, screenshots (Playwright → docs/)
 - [ ] 6. Polish + final verification on live URL
 
 ## Key decisions
@@ -20,7 +20,7 @@
 - Physics overshoot at w>75 (REVIEW #6) left unchanged: not a code bug, a tuning choice.
 
 ## Commands
-npm install · npm run dev · npm run build · npm test · node tests/e2e.mjs
+npm install · npm run dev · npm run build · npm test · (npm run preview) node tests/e2e.mjs · node tests/audio.mjs · node tests/capture.mjs
 
 ## Next step
-Milestone 1: push, enable Pages, confirm live URL.
+Polish + switch deploy to Actions once gh has the workflow scope (gh auth refresh -s workflow); squash the first two commits (workflow added then removed). Until then dist is pushed to gh-pages (legacy Pages).

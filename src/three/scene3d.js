@@ -246,7 +246,7 @@ export async function mount3D(container, cb, opts) {
     const order = labels.slice().sort((a, b) => (b.p.id === focused) - (a.p.id === focused) || b.p.pri - a.p.pri);
     const placed = [];
     for (const L of order) {
-      let ok = L.on && L.x > 4 && L.x < vw - inset.right - 4 && L.y < vh - inset.bottom - 4 && L.y > L.h + 4;
+      let ok = L.on && L.x > 4 && L.x < vw - inset.right - 4 && L.y < vh - inset.bottom - 4 && L.y > L.h + 72;
       if (ok) {
         const r = [L.x - L.w / 2 - 4, L.y - L.h - 10, L.x + L.w / 2 + 4, L.y - 2];
         for (const q of placed) { if (r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1]) { ok = false; break; } }

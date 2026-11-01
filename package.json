@@ -17,5 +17,13 @@
   "dependencies": {
     "@fontsource/be-vietnam-pro": "^5.3.0",
     "three": "^0.187.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harieedawwn/nuclear-sim.git"
+  },
+  "homepage": "https://harieedawwn.github.io/nuclear-sim/",
+  "engines": {
+    "node": ">=20.19"
   }
 }
