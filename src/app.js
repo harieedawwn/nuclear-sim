@@ -156,6 +156,7 @@ function setProgress(p, text) {
 function mount2D() {
   if (scene && scene.dispose) { try { scene.dispose(); } catch (e) { /* ignore */ } }
   scene = null; sceneKind = '2d';
+  audio.setTier('low');
   elScene.textContent = '';
   elScene.className = 'scene is2d';
   if (window.Scene && window.Scene.mount) {
@@ -182,6 +183,7 @@ function mount3D(tier) {
     }, { tier });
   }).then((s3) => {
     scene = s3; sceneKind = '3d';
+    audio.setTier(s3.getQuality());
     window.__scene = s3;
     $('btn-overview').hidden = false;
     applyMotion();
