@@ -1,5 +1,6 @@
 /* app.js - page wiring for the PWR teaching simulator: main loop, panel, chart, error handling.
  * Classic script, ES2017, no libraries. Uses window.SimCore and window.Scene only. UTF-8. */
+import { probeWebGL, isSoftwareGL, initialTier } from './three/quality.js';
 (function () {
   'use strict';
 
@@ -152,17 +153,33 @@
     dirty = true;
     updateControls();
   }
-  if (window.Scene && window.Scene.mount) {
-    try {
-      scene = window.Scene.mount($('scene'), { onPartTap: showInfo, onRodDrag: onRodDrag });
-    } catch (e) {
-      scene = null;
-      softFail('scene.mount', e);
-      $('scene').textContent = 'Không vẽ được sơ đồ nhà máy. Các số liệu bên dưới vẫn hoạt động.';
+  function mount2D() {
+    if (window.Scene && window.Scene.mount) {
+      try {
+        scene = window.Scene.mount($('scene'), { onPartTap: showInfo, onRodDrag: onRodDrag });
+      } catch (e) {
+        scene = null;
+        softFail('scene.mount', e);
+        $('scene').textContent = 'Không vẽ được sơ đồ nhà máy. Các số liệu bên dưới vẫn hoạt động.';
+      }
     }
-  } else {
-    showToast('Không tải được scene.js. Hãy tải lại trang.');
+    applyMotion();
   }
+  (function () {
+    var info = probeWebGL();
+    if (!info || isSoftwareGL(info)) { mount2D(); return; }
+    var el = $('scene');
+    el.className = 'is3d';
+    import('./three/scene3d.js').then(function (mod) {
+      return mod.mount3D(el, { onPartTap: showInfo, onRodDrag: onRodDrag }, { tier: initialTier(info) });
+    }).then(function (s3) {
+      scene = s3; window.__scene = s3; applyMotion();
+    }).catch(function (e) {
+      try { console.warn('[3d]', e && e.message); } catch (x) { /* ignore */ }
+      el.className = ''; el.textContent = '';
+      mount2D();
+    });
+  })();
   var mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
   function applyMotion() {
     if (scene && scene.setReducedMotion) {

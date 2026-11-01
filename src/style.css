@@ -215,3 +215,8 @@ svg{display:block}
   .num{font-size:22px}
 }
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto !important;transition:none !important;animation:none !important}}
+#scene.is3d { position: relative; height: min(62vh, 640px); overflow: hidden; }
+#scene.is3d canvas.gl { display: block; width: 100%; height: 100%; }
+.labels { position: absolute; inset: 0; pointer-events: none; }
+.tag { position: absolute; left: 0; top: 0; pointer-events: auto; font: 600 12px/1 "Be Vietnam Pro", system-ui, sans-serif; color: #fff; background: rgba(28,40,52,.82); border: 0; border-radius: 6px; padding: 6px 8px; min-height: 0; }
+.tag.off { opacity: 0; pointer-events: none; }
