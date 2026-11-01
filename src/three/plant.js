@@ -308,10 +308,10 @@ export function buildPlant(opts) {
   {
     // columns
     for (let x = HX0; x <= HX1 + 0.1; x += 6.8) {
-      B.paint.add(box(-0.35, 0, -0.35, 0.35, HH, 0.35), C.steel, [x, 0, HZ0 + 0.35]);
+      B.paint.add(box(-0.35, 0, -0.35, 0.35, HH, 0.35), C.steel, [x, 0, HZ0 + 0.38]);
       const corner = x < HX0 + 0.1 || x > HX1 - 0.2;
-      B.paint.add(box(-0.35, 0, -0.35, 0.35, corner ? HH : 1.4, 0.35), C.steel, [x, 0, HZ1 - 0.35]);
-      if (!corner) B.concrete.add(box(-0.36, 1.4, -0.36, 0.36, 1.46, 0.36), C.cut, [x, 0, HZ1 - 0.35]);
+      B.paint.add(box(-0.35, 0, -0.35, 0.35, corner ? HH : 1.46, 0.35), C.steel, [x, 0, HZ1 - 0.42]);
+      if (!corner) B.concrete.add(box(-0.37, 1.46, -0.37, 0.37, 1.52, 0.37), C.cut, [x, 0, HZ1 - 0.42]);
       B.paint.add(box(-0.3, 21.4, HZ0 + 0.7, 0.3, 22.0, HZ0 + 1.6), C.steel, [x, 0, 0]);
     }
     // back wall: cladding, window band with mullions
@@ -321,15 +321,15 @@ export function buildPlant(opts) {
     for (let x = HX0; x <= HX1; x += 2.27) B.paint.add(box(-0.08, 14.5, HZ0 - 0.32, 0.08, 21, HZ0 + 0.02), '#4E5A63', [x, 0, 0]);
     B.paint.add(box(HX0, 17.7, HZ0 - 0.32, HX1, 17.85, HZ0 + 0.02), '#4E5A63');
     // horizontal cladding seams
-    for (let y = 2.5; y < 14.5; y += 2.4) B.paint.add(box(HX0, y, HZ0 + 0.0, HX1, y + 0.06, HZ0 + 0.05), '#A6B1B8');
+    for (let y = 2.5; y < 14.5; y += 2.4) B.paint.add(box(HX0, y, HZ0 + 0.012, HX1, y + 0.06, HZ0 + 0.03), '#A6B1B8');
     // left end wall (full) with gable, right end wall only at the back (section)
     B.paint.add(box(HX0 - 0.3, 0, HZ0, HX0, HH, HZ1), C.cladding);
     B.paint.add(gable(HZ0, HZ1, HH, 3.2), C.cladding, [HX0 - 0.15, 0, 0]);
     B.paint.add(box(HX1, 0, HZ0, HX1 + 0.3, HH, -1.5), C.cladding);
     B.concrete.add(box(HX1 - 0.02, 0, -1.5, HX1 + 0.32, HH, -1.2), C.cut);
     // front wall: only a low plinth (cut away above)
-    B.concrete.add(box(HX0, 0, HZ1 - 0.3, HX1, 1.2, HZ1), C.concreteDark);
-    B.concrete.add(box(HX0, 1.2, HZ1 - 0.3, HX1, 1.4, HZ1), C.cut);
+    B.concrete.add(box(HX0, 0, HZ1 - 0.3, HX1, 1.2, HZ1 + 0.03), C.concreteDark);
+    B.concrete.add(box(HX0 - 0.01, 1.2, HZ1 - 0.31, HX1 + 0.01, 1.4, HZ1 + 0.04), C.cut);
     // roof panels over the back half, trusses everywhere
     const rise = 3.2, rz = (z) => HH + rise * (1 - Math.abs(z) / HZ1);
     {

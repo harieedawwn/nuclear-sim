@@ -468,6 +468,9 @@ export async function mount3D(container, cb, opts) {
       controls.autoRotateSpeed = 0.12 * driftDir;
     } else controls.autoRotate = false;
     controls.update(rdt);
+    // depth precision: keep the near plane proportional to the viewing distance (avoids z-fighting)
+    const near = clamp(camera.position.distanceTo(controls.target) * 0.04, 0.5, 14);
+    if (Math.abs(near - camera.near) > camera.near * 0.15) { camera.near = near; camera.updateProjectionMatrix(); needsRender = true; }
     // keep the target on the plate
     const t = controls.target;
     const cx = clamp(t.x, -W / 2 + 10, W / 2 - 10), cy = clamp(t.y, 0, 45), cz = clamp(t.z, -D / 2 + 5, D / 2 - 5);
