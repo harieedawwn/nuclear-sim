@@ -756,7 +756,7 @@ export function buildPlant(opts) {
 
   /* ------------------------------------------------------------ parts: anchors, hit volumes, camera views */
   const parts = [
-    { id: 'reactor', label: 'Lò phản ứng', anchor: [RX, 28.5, RZ], hit: [RX, 8, RZ, 6, 16, 6], view: [RX, 12, RZ, 52, 0.62, 1.05], pri: 10 },
+    { id: 'reactor', label: 'Lò phản ứng', anchor: [RX, 28.5, RZ], hit: [RX, 8, RZ, 6, 16, 6], view: [RX, 15.5, RZ, 64, 0.62, 1.08], pri: 10 },
     { id: 'sg', label: 'Bình sinh hơi', anchor: [SG[1][0], 31, SG[1][1]], hit: [SG[1][0], 17, SG[1][1], 3, 13, 3], view: [SG[1][0], 18, SG[1][1], 46, 0.62, 1.1], pri: 8, hit2: [SG[0][0], 17, SG[0][1], 3, 13, 3] },
     { id: 'pressurizer', label: 'Bình điều áp', anchor: [PZ[0], 24.5, PZ[1]], hit: [PZ[0], 17, PZ[1], 1.8, 6.5, 1.8], view: [PZ[0], 16, PZ[1], 36, 0.62, 1.15], pri: 4 },
     { id: 'pump', label: 'Bơm sơ cấp', anchor: [PUMPS[1][0], 14, PUMPS[1][1]], hit: [PUMPS[1][0], 9, PUMPS[1][1], 1.8, 4.5, 1.8], view: [PUMPS[1][0], 9, PUMPS[1][1], 30, 0.62, 1.15], pri: 3, hit2: [PUMPS[0][0], 9, PUMPS[0][1], 1.8, 4.5, 1.8] },

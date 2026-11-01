@@ -6,9 +6,9 @@ import { buildPlant, W, D } from './plant.js';
 import { skyTexture, puffTexture, signTexture } from './textures.js';
 
 export const TIERS = {
-  high: { dpr: 2, shadow: 2048, post: true, plume: 34, rain: 260, bubbles: 1 },
-  medium: { dpr: 1.5, shadow: 1024, post: false, plume: 24, rain: 150, bubbles: 0.7 },
-  low: { dpr: 1, shadow: 0, post: false, plume: 12, rain: 60, bubbles: 0.4 }
+  high: { dpr: 2, shadow: 2048, post: true, plume: 44, rain: 260, bubbles: 1 },
+  medium: { dpr: 1.5, shadow: 1024, post: false, plume: 32, rain: 150, bubbles: 0.7 },
+  low: { dpr: 1, shadow: 0, post: false, plume: 16, rain: 60, bubbles: 0.4 }
 };
 
 const clamp = (x, a, b) => (x < a ? a : x > b ? b : x);
@@ -164,16 +164,33 @@ export async function mount3D(container, cb, opts) {
 
   let vw = 1, vh = 1, inset = { right: 0, bottom: 0 }, overviewDist = 300;
   const overviewTarget = new THREE.Vector3(0, 6, 2);
+  // overview distance: smallest distance at which the key points fit in the free area
+  const FIT_WIDE = [[-110, 0, -60], [110, 0, -60], [-110, -10, 60], [110, -10, 60], [80, 66, -20], [-62, 48, -2]];
+  const FIT_TALL = [[-84, 0, -2], [-62, 50, -2], [102, 0, -20], [80, 66, -20], [98, 27, 51], [-50, 0, 46], [60, 0, -44]];
+  let overviewAz = 0.62;
+  const fitCam = new THREE.PerspectiveCamera();
   function fitOverview() {
     const ew = Math.max(1, vw - inset.right), eh = Math.max(1, vh - inset.bottom);
-    const aspect = ew / eh;
-    const halfW = aspect < 1 ? 92 : 116, halfH = 64;
-    const vf = THREE.MathUtils.degToRad(camera.fov) / 2;
-    const hf = Math.atan(Math.tan(vf) * aspect);
-    overviewDist = Math.max(halfW / Math.tan(hf), halfH / Math.tan(vf));
-    overviewDist = clamp(overviewDist, 150, 620);
-    overviewTarget.set(aspect < 1 ? 10 : 0, aspect < 1 ? 12 : 6, 2);
-    controls.maxDistance = overviewDist * 1.3;
+    const tall = ew / eh < 1;
+    const pts = tall ? FIT_TALL : FIT_WIDE;
+    overviewAz = tall ? 0.78 : 0.62;
+    overviewTarget.set(tall ? 8 : 0, 8, 2);
+    fitCam.copy(camera);
+    let d = 120;
+    for (; d < 900; d *= 1.04) {
+      viewPos(overviewTarget, d, overviewAz, 1.0, fitCam.position);
+      fitCam.lookAt(overviewTarget); fitCam.updateMatrixWorld();
+      let ok = true;
+      for (const p of pts) {
+        tmpV.set(p[0], p[1], p[2]).project(fitCam);
+        // NDC of the full canvas -> pixels; must land inside the free area with a margin
+        const x = (tmpV.x * 0.5 + 0.5) * vw, y = (-tmpV.y * 0.5 + 0.5) * vh;
+        if (x < 12 || x > ew - 12 || y < (tall ? 70 : 60) || y > eh - 12) { ok = false; break; }
+      }
+      if (ok) break;
+    }
+    overviewDist = d;
+    controls.maxDistance = overviewDist * 1.35;
   }
   function viewPos(target, dist, az, pol, out) {
     return out.set(target.x + dist * Math.sin(pol) * Math.sin(az), target.y + dist * Math.cos(pol), target.z + dist * Math.sin(pol) * Math.cos(az));
@@ -207,7 +224,8 @@ export async function mount3D(container, cb, opts) {
     b.setAttribute('data-part', p.id);
     b.addEventListener('click', (e) => { e.stopPropagation(); focusPart(p.id, true); });
     layer.appendChild(b);
-    return { p, el: b, v: new THREE.Vector3(p.anchor[0], p.anchor[1], p.anchor[2]), x: 0, y: 0, w: 0, h: 0, on: true, vis: null };
+    b.classList.add('off');
+    return { p, el: b, v: new THREE.Vector3(p.anchor[0], p.anchor[1], p.anchor[2]), x: 0, y: 0, w: 0, h: 0, on: true, vis: false };
   });
   const tmpV = new THREE.Vector3();
   let labelFrame = 0;
@@ -218,7 +236,9 @@ export async function mount3D(container, cb, opts) {
       if (measure || !L.w) { L.w = L.el.offsetWidth; L.h = L.el.offsetHeight; }
       tmpV.copy(L.v).project(camera);
       L.on = tmpV.z < 1 && tmpV.x > -1.1 && tmpV.x < 1.1 && tmpV.y > -1.1 && tmpV.y < 1.1;
-      L.x = (tmpV.x * 0.5 + 0.5) * vw; L.y = (-tmpV.y * 0.5 + 0.5) * vh;
+      L.y = (-tmpV.y * 0.5 + 0.5) * vh;
+      // keep the tag inside the free area horizontally (its stem may sit off-centre)
+      L.x = clamp((tmpV.x * 0.5 + 0.5) * vw, L.w / 2 + 6, vw - inset.right - L.w / 2 - 6);
       L.el.style.transform = 'translate3d(' + (L.x - L.w / 2).toFixed(1) + 'px,' + (L.y - L.h - 6).toFixed(1) + 'px,0)';
     }
     if (labelFrame % 6 !== 0 && !measure) return;
@@ -264,7 +284,7 @@ export async function mount3D(container, cb, opts) {
   function overview(instant) {
     focused = null; atOverview = true; idleT = 0;
     labels.forEach((L) => L.el.classList.remove('on'));
-    flyTo(overviewTarget, overviewDist, 0.62, 1.0, instant ? 0 : 1.4);
+    flyTo(overviewTarget, overviewDist, overviewAz, 1.0, instant ? 0 : 1.4);
   }
 
   /* ---------------------------------------------------------------- pointer: taps, rod drag */
@@ -545,9 +565,9 @@ export async function mount3D(container, cb, opts) {
       if (p.t >= 1) { p.t -= 1; p.ox = Math.random() - 0.5; p.oz = Math.random() - 0.5; }
       const u = p.t;
       const rise = u * (30 + 40 * load), drift = u * u * (24 + 14 * load);
-      const size = (tr * 1.5 + u * (14 + 20 * load)) * p.s * (0.6 + 0.4 * load);
+      const size = (tr * 0.95 + u * (12 + 18 * load)) * p.s * (0.6 + 0.4 * load);
       setT(parr2, i, top.x + p.ox * tr * 0.8 + drift, top.y + 1 + rise, top.z + p.oz * tr * 0.8 + drift * 0.25, size);
-      aAlpha.array[i] = smooth(0, 0.05, u) * (1 - smooth(0.3, 1, u)) * (0.15 + 0.85 * load);
+      aAlpha.array[i] = smooth(0, 0.05, u) * (1 - smooth(0.3, 1, u)) * (0.12 + 0.7 * load);
     }
     plume.instanceMatrix.needsUpdate = true; aAlpha.needsUpdate = true;
     sunView.copy(sunDir).transformDirection(camera.matrixWorldInverse);
@@ -627,6 +647,14 @@ export async function mount3D(container, cb, opts) {
     setReducedMotion(b) { reduced = !!b; if (reduced) controls.autoRotate = false; },
     info() { return { calls: renderer.info.render.calls, tris: renderer.info.render.triangles, tex: renderer.info.memory.textures, geo: renderer.info.memory.geometries, tier: tierName }; },
     focusedPart: () => focused,
+    // screen position of the rod handle (used by the automated tests)
+    handlePoint() {
+      const v = tmpV.copy(dyn.handleAnchor);
+      v.y += dyn.rods.position.y - 3.6;
+      v.project(camera);
+      const r = canvas.getBoundingClientRect();
+      return { x: r.left + (v.x * 0.5 + 0.5) * r.width, y: r.top + (-v.y * 0.5 + 0.5) * r.height };
+    },
     dispose() {
       if (ro) ro.disconnect(); else window.removeEventListener('resize', resize);
       container.removeEventListener('pointerdown', onDown, true);

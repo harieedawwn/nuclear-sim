@@ -1,3 +1,8 @@
+import './errors.js';
+import '@fontsource/be-vietnam-pro/400.css';
+import '@fontsource/be-vietnam-pro/500.css';
+import '@fontsource/be-vietnam-pro/600.css';
+import '@fontsource/be-vietnam-pro/700.css';
 import './style.css';
 import '../sim-core.js';
 import './scene2d.js';
