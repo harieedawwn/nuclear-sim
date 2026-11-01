@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EEF2F5">
+<title>Mô phỏng nhà máy điện hạt nhân (PWR)</title>
+<link rel="icon" href="data:,">
+<script type="module" src="./src/main.js"></script>
+</head>
+<body>
+
+<div class="tip" id="tip" hidden>
+  <span>Mở bằng Safari/Chrome để chạy mượt hơn</span>
+  <button type="button" class="icon-btn" id="tip-close" aria-label="Đóng gợi ý">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+</div>
+
+<div class="app">
+
+  <header class="head">
+    <h1>Mô phỏng nhà máy điện hạt nhân (PWR)</h1>
+    <div class="head-actions">
+      <button type="button" class="btn" id="btn-pause">
+        <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"/></svg>
+        <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5l12 7-12 7z"/></svg>
+        <span class="t" id="pause-label">Tạm dừng</span>
+      </button>
+      <button type="button" class="btn" id="btn-reset">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v5h5"/></svg>
+        <span class="t">Đặt lại</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="scene-wrap">
+      <div id="scene"></div>
+      <div class="hint" id="hint" hidden>Kéo thanh điều khiển để thay đổi công suất</div>
+    </div>
+    <section class="info" id="info" role="dialog" aria-modal="false" aria-labelledby="info-title" hidden>
+      <div class="info-top">
+        <h2 id="info-title">Lò phản ứng</h2>
+        <button type="button" class="icon-btn" id="info-close" aria-label="Đóng hộp thông tin">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <p id="info-text"></p>
+      <p class="model">Giả định mô hình: thời gian chạy nhanh hơn nhà máy thật và chuỗi quá trình được đơn giản hoá.</p>
+    </section>
+  </main>
+
+  <div class="status" id="status" data-s="safe" role="status" aria-live="polite" aria-atomic="true">
+    <span class="chip" aria-hidden="true">
+      <svg class="g-safe" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+      <svg class="g-warn" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.01"/></svg>
+      <svg class="g-danger" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </span>
+    <div class="s-body">
+      <div class="s-label" id="s-label">An toàn</div>
+      <div class="s-text" id="s-text">Lõi ở nhiệt độ bình thường, nhà máy chạy ổn định.</div>
+    </div>
+  </div>
+
+  <section class="side" aria-label="Số liệu">
+    <div class="readouts">
+      <div class="card" id="c-pTh" data-t="0">
+        <div class="lab">Công suất nhiệt</div>
+        <div class="val"><span class="num" id="v-pTh">0</span><span class="unit">MWt</span></div>
+        <svg class="arr" viewBox="0 0 24 24" role="img" aria-label="ổn định"><path class="up" d="M12 19V5M6 11l6-6 6 6"/><path class="dn" d="M12 5v14M6 13l6 6 6-6"/><path class="fl" d="M6 12h12"/></svg>
+      </div>
+      <div class="card" id="c-tCore" data-t="0">
+        <div class="lab">Nhiệt độ lõi</div>
+        <div class="val"><span class="num" id="v-tCore">0</span><span class="unit">°C</span></div>
+        <svg class="arr" viewBox="0 0 24 24" role="img" aria-label="ổn định"><path class="up" d="M12 19V5M6 11l6-6 6 6"/><path class="dn" d="M12 5v14M6 13l6 6 6-6"/><path class="fl" d="M6 12h12"/></svg>
+      </div>
+      <div class="card" id="c-pSteam" data-t="0">
+        <div class="lab">Áp suất hơi</div>
+        <div class="val"><span class="num" id="v-pSteam">0</span><span class="unit">bar</span></div>
+        <svg class="arr" viewBox="0 0 24 24" role="img" aria-label="ổn định"><path class="up" d="M12 19V5M6 11l6-6 6 6"/><path class="dn" d="M12 5v14M6 13l6 6 6-6"/><path class="fl" d="M6 12h12"/></svg>
+      </div>
+      <div class="card" id="c-rpm" data-t="0">
+        <div class="lab">Tốc độ tuabin</div>
+        <div class="val"><span class="num" id="v-rpm">0</span><span class="unit">vòng/phút</span></div>
+        <svg class="arr" viewBox="0 0 24 24" role="img" aria-label="ổn định"><path class="up" d="M12 19V5M6 11l6-6 6 6"/><path class="dn" d="M12 5v14M6 13l6 6 6-6"/><path class="fl" d="M6 12h12"/></svg>
+      </div>
+      <div class="card" id="c-pElec" data-t="0">
+        <div class="lab">Công suất điện</div>
+        <div class="val"><span class="num" id="v-pElec">0</span><span class="unit">MW</span></div>
+        <svg class="arr" viewBox="0 0 24 24" role="img" aria-label="ổn định"><path class="up" d="M12 19V5M6 11l6-6 6 6"/><path class="dn" d="M12 5v14M6 13l6 6 6-6"/><path class="fl" d="M6 12h12"/></svg>
+      </div>
+    </div>
+
+    <section class="chart-card" aria-label="Biểu đồ 60 giây gần nhất">
+      <div class="chart-head">
+        <h2>60 giây gần nhất</h2>
+        <ul class="legend">
+          <li><i class="sw t"></i>Nhiệt độ lõi (°C)</li>
+          <li><i class="sw e"></i>Công suất điện (MW)</li>
+        </ul>
+      </div>
+      <div class="chart-box" id="chart-box">
+        <canvas id="chart" role="img" aria-label="Đường nhiệt độ lõi và công suất điện trong 60 giây gần nhất. Công suất điện đổi chậm hơn nhiệt độ lõi."></canvas>
+      </div>
+    </section>
+  </section>
+
+  <div class="controls" id="controls">
+    <div class="rods-head">
+      <label id="rod-label" for="rods">Thanh điều khiển</label>
+      <output id="rod-val" for="rods">60%</output>
+    </div>
+    <div class="rods-row">
+      <button type="button" class="step" id="btn-minus" aria-label="Hạ thanh điều khiển 5 phần trăm">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg>
+      </button>
+      <div class="slider" id="slider">
+        <span class="trk"></span><span class="fill"></span>
+        <input type="range" id="rods" min="0" max="100" step="1" value="60" aria-labelledby="rod-label">
+      </div>
+      <button type="button" class="step" id="btn-plus" aria-label="Rút thanh điều khiển 5 phần trăm">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg>
+      </button>
+    </div>
+    <div class="rods-ends" aria-hidden="true"><span>Hạ hết</span><span>Rút hết</span></div>
+    <div class="btn-row">
+      <button type="button" class="btn scram" id="btn-scram">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></svg>
+        <span>SCRAM</span>
+      </button>
+      <button type="button" class="btn" id="btn-recover" disabled>
+        <span>Khôi phục</span>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden>
+  <span id="toast-msg">Có lỗi nhỏ trong ứng dụng. Mô phỏng vẫn đang chạy.</span>
+  <button type="button" class="icon-btn" id="toast-close" aria-label="Đóng thông báo">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "nuclear-sim",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Mô phỏng nhà máy điện hạt nhân PWR 3D cho học sinh",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node test_sim.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.64.1",
+    "vite": "^8.3.5"
+  },
+  "dependencies": {
+    "@fontsource/be-vietnam-pro": "^5.3.0",
+    "three": "^0.187.0"
+  }
+}
