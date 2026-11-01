@@ -7,7 +7,7 @@
 - [x] 3. UI redesign (side panel / bottom sheet, energy chain, gauge, tour, quality)
 - [x] 4. Procedural Web Audio sound
 - [x] 5. README, OG image, icons, screenshots (Playwright → docs/)
-- [ ] 6. Polish + final verification on live URL
+- [x] 6. Polish + final verification on live URL
 
 ## Key decisions
 - sim-core.js + test_sim.js stay at repo root, unchanged (CommonJS test, `npm test`).
@@ -23,4 +23,4 @@
 npm install · npm run dev · npm run build · npm test · (npm run preview) node tests/e2e.mjs · node tests/audio.mjs · node tests/capture.mjs
 
 ## Next step
-Polish + switch deploy to Actions once gh has the workflow scope (gh auth refresh -s workflow); squash the first two commits (workflow added then removed). Until then dist is pushed to gh-pages (legacy Pages).
+Open: (1) grant gh workflow scope (gh auth refresh -h github.com -s workflow), then commit .github/workflows/deploy.yml (kept locally, excluded) and squash the first two commits; until then dist is force-pushed to gh-pages. (2) Playwright WebKit on Windows draws a blank scene when shadows are on (Low works); verify on a real iPhone, if blank there too cap iOS to Low.
